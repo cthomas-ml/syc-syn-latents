@@ -28,10 +28,7 @@ url: "https://cthomas-ml.github.io" # the base hostname & protocol for your site
 github_username:  cthomas-ml
 
 # Build settings
-remote_theme: just-the-docs
-plugins:
-  - jekyll-feed 
-  - jekyll-default-layout
+theme: just-the-docs
 
 # Exclude from processing.
 # The following items will not be processed, by default.
