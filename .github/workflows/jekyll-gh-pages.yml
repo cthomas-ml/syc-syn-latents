@@ -39,12 +39,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup Ruby
-          uses: ruby/setup-ruby@v1
-          with:
-            ruby-version: '3.1'
-            bundler-cache: true
-            cache-version: 0
-            working-directory: '${{ github.workspace }}/docs'
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1'
+          bundler-cache: true
+          cache-version: 0
+          working-directory: '${{ github.workspace }}/docs'
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5
@@ -54,9 +54,9 @@ jobs:
         env:
           JEKYLL_ENV: production
       - name: Upload artifact
-          uses: actions/upload-pages-artifact@v1
-          with:
-            path: "docs/_site/"
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: "docs/_site/"
 
   # Deployment job
   deploy:
