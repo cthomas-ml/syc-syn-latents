@@ -106,9 +106,8 @@ Next we can examine generaliziation. The method would be useful if we could trai
 
 When training on the linguistics dataset, some but not all accuracy is recovered when testing on the opinionated IMDB dataset. 
 
-**Still TODO**
-- I was not able to get access to a large enough GPU to finetune the model using the filtered sycophantic dataset for a direct comparison. 
-- Test on Anthropic's eval datasets.
+
+I was not able to get access to a large enough GPU to finetune the model using the filtered sycophantic dataset for a direct comparison. I also plan to test both models against Anthropic's synthetically generated eval datasets. 
 
 ## Protecting against model sycophancy
 
