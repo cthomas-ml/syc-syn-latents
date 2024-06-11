@@ -17,19 +17,38 @@ We would not, however, expect Wikipedia to exhibit sycophancy. When we turn to o
 In this post I am digging into the nature of LLM sycophancy. I'm trying to understand scenarios in which it arises - which datasets, output formats, and prompt manipulations most easily encourage the model to output an incorrect or inconsistent response. Next, I dive into two recent approaches that aim to mitigate LLM sycophancy, both of which depend on automated prompt manipulation. Finally, I lay out how either technique would be used in production.  
 
 
-### Navigating this site
-{: .no_toc }
-
-Below you'll find a brief summary of the work I've done in this project.  The links and sidepanel will bring you to the detailed explanations and code if you'd like to follow along.
-
-<details open markdown="block">
+<!-- <details open markdown="block">
   <summary>
     Home page contents
   </summary>
   {: .text-delta }
 - TOC
 {:toc}
-</details>
+</details> -->
+
+
+## Contributions 
+- Explore and quantify sycophancy in one particular model and [provide the flexible code]({{site.baseurl}}/exploration-nb) for you to explore new data, models or prompt manipulations.
+  - The [google/flan-t5-xxl](https://huggingface.co/google/flan-t5-xxl) exhibits significant sycophancy.
+  - Sycophancy is sensitive to the specifics of prompt manipulation, the output type (multiple choice vs. freeform), and the dataset.
+- Compare two recent methods to address sycophantic behavior in LLMs 
+[Simple synthetic data reduces sycophancy in large language models](https://arxiv.org/abs/2308.03958), and 
+ [Discovering Latent Knowledge in Language Models Without Supervision](https://arxiv.org/abs/2212.03827), aka Contrast Consistent Search (CCS), which selects a mid-model layer and trains a probe to distinguish truthful from untruthful latent representations.
+  - **Similarities**
+    - Both papers were limited to multiple choice questions, but the synthetic data approach may be extendable to summary responses.
+    - Both methods leverage automated prompt manipulation to generate training data.
+    - In generating prompt manipulations, both methods make some assumption about the type of opinion that will be expressed.
+  - **Differences**
+    - The CCS probe is very light weight and easy to train, where finetuning the model requires a large GPU (which I could not access during this project).
+    - CCS does not change the main model and does not risk knowledge loss. The CCS probe acts on unchanged model representations, where synthetic-data-finetuning changes results for all queries.
+    - Because it is a lightweight probe, CCS may be easier to adapt to new types of sycophancy. In the finetuning approach, the synthetic data are generated with a specific format of opinion and query and used in training. This  effectively bakes-in the sycophancy protection for that format of misleading query, but wouldn't be easily adapted to another. 
+- Suggest methods to leverage these approaches in real-life scenarios.
+
+## Navigating this site
+{: .no_toc }
+
+Below you'll find a brief summary of the work I've done in this project.  The links and sidepanel will bring you to the detailed analysis and code if you'd like to follow along.
+
 
 # Summary
 
@@ -41,8 +60,10 @@ In this post I'm digging into two recent publications with methods that might he
 
 ## Quantifying model sycophancy
 
-I'm working with the Google t5-flan-xxl model, which is similar to the models used in the papers above. 
+I'm working with the [google/flan-t5-xxl](https://huggingface.co/google/flan-t5-xxl) model, which is similar to the models used in the papers above. 
 I generated two synthetic language datasets using the [synthetic data github repo](https://github.com/google/sycophancy-intervention). I also used an open-source dataset of product reviews.  For all datasets, I processed the prompts to include or exclude incorrect user opinions and limit the model response to multiple choice (Agree or Disagree).  
+
+The model and data and exploration code is available in a [very accessible notebook]({{site.baseurl}}/exploration-nb) - try it out!
 
 
 | Dataset | No opinion | Incorrect opinion included  |
@@ -52,16 +73,16 @@ I generated two synthetic language datasets using the [synthetic data github rep
 | IMDB         |     96%    |     60%   |
 
 
-In the multiple-choice setting, the model generally prefers to agree with an opinion expressed in the prompt, even if it answers correctly when no opinion is included. In [Exploring sycophancy]({{site.baseurl}}/exploring-sycophancy), I dig a bit deeper and find that the model sycophancy is quite sensitive to the format and phrasing of the opinion, the type of output expected from the model, and the specific dataset we are looking at.
+In the multiple-choice setting, the model generally prefers to agree with an opinion expressed in the prompt, even if it answers correctly when no opinion is included. 
 
-The code is available in a [very accessible notebook]({{site.baseurl}}/exploration-nb) - try it out!
+In [Exploring sycophancy]({{site.baseurl}}/exploring-sycophancy), the observed model sycophancy appears to be sensitive to multiple details in the prompt. Specifically, to how the  opinion is phrased, which output format is requested (eg. classification vs. summarization task), and the sensitivity differs based on the dataset (eg. simple math vs IMDB sentiment).
+For example, in the math dataset the model exhibits sycophancy in the multiple choice setting, but not in summary mode, whereas in the IMDB dataset, it is less prone to exhibit sycophancy in the multiple choice setting and can be tricked more readily in summary mode. 
 
 
-
-### Sensitivity to prompt manipulation 
+### Sensitivity to prompt manipulation will impact both methods
 {: .no_toc }
 
-Both methods thus depend on prompt manipulation for training. In CCS, we aim to generate model embeddings for *both* answers to a given question. A probe is trained to contrast those two embeddings and determine which one is the 'truth.' In finetuning with synthetic data, the dataset is generated with a predefined format. 
+Both sycophancy mitigation methods depend on prompt manipulation for training. In CCS, we aim to generate model embeddings for *both* answers to a given question. A probe is trained to contrast those two embeddings and determine which one is the 'truth.' In finetuning with synthetic data, the dataset is generated with a predefined format. 
 
 I found that the model is sensitive to the specific prompt manipulation, and believe that this will impact performance in both CCS and finetuning with synthetic data.  
 
@@ -78,12 +99,14 @@ I did find that when I applied CCS to these data, there was poor separation in l
 
 
 ## Training Sycophancy Mitigators
-*Note that all experiments in this section were performed with low number of samples, and to get reliable results would require re-running at higher N.*  Stay tuned.
-
+<span style="color:grey"> 
+*This section benefited greatly from the well-documented and easy-to-follow [CCS GitHub repo](https://github.com/collin-burns/discovering_latent_knowledge).
+Note that all experiments in this section were performed with low number of samples, and to get reliable results would require re-running at higher N.  Stay tuned* </span>.
 
 In CCS every prompt gets manipulated into two prompts - one representing each answer of the two-choice question. The two samples are then passed through the model to calculate an embedding vector. 
 
 From that point we can use the vectors and their labels to train a logistic regression model to determine whether the vectors are easily distinguished. If not, we are unlikely to successfully train a CCS probe. 
+
 
 
 | Dataset       |     Logistic Regression on Latents| CCS  result |
@@ -93,7 +116,6 @@ From that point we can use the vectors and their labels to train a logistic regr
 | IMDB                          |       92%      |      88%       |
 
 In the synthetic linguistics dataset, even logistic regression fails to distinguish positive from negative embeddings.
-
 
 Next we can examine generaliziation. The method would be useful if we could train a model using some dataset, and use the approach on new, unseen datasets. 
 
@@ -129,23 +151,6 @@ With a model finetuned on synthetic data,
 2. Return response.
 ```
 
-
-# Contributions 
-- Explore and quantify sycophancy in a model and provide the [code]({{site.baseurl}}/exploration-nb) for you to explore new data, models or prompt manipulations.
-  - The google/flan-t5-xxl exhibits significant sycophancy.
-  - It is sensitive to the specifics of prompt manipulation, the output type (multiple choice vs. freeform), and the dataset.
-- Compare two recent methods to address sycophantic behavior in LLMs: (1) Finetune a model on synthetic data that discourages sycophancy.  (2) Contrast Consistent Search - identify a mid-model layer and train a probe to distinguish truthful from untruthful representations.
-  - Similarities
-    - Both papers were limited to multiple choice questions, but the synthetic data approach may be extendable to summary responses.
-    - Both methods leverage automated prompt manipulation to generate training data.
-    - In generating prompt manipulations, both methods make some assumption about the type of opinion that will be expressed.
-  - Differences
-    - The CCS probe is very light weight and easy to train, where finetuning the model requires a large GPU (which I could not access during this project).
-    - CCS does not risk knowledge loss. Finetuning the model on synthetic data will change the latent representations of all queries, where the CCS probe acts at query time for the specific query.
-    - The synthetic data are generated with a specific format of opinion and query, and then the model is finetuned. This  effectively bakes-in the sycophancy protection for that format of misleading query, but wouldn't be easily adapted to another. The CCS method may be easier to adapt by generating an inverse-opinion prompt on the fly at inference time.
-- Suggest methods to leverage these approaches in real-life scenarios.
-
-
-
 # About the project
-This project was contributed by C Thomas as part of the 2024 BlueDot Alignment course.
+This project was contributed by C Thomas as part of the 2024 BlueDot Alignment course. 
+I'd like to thank my cohort for their feedback and solidarity, our leader Cara Selvarajah and the entire BlueDot team for running a great program, and a special thanks to Aaron Scher for thoughtful insights and resources. I'm also grateful to the authors of both papers, who made very accessible code and Hugging Face, which seems to make everything possible. 

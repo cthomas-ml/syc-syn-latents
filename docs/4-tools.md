@@ -1,6 +1,6 @@
 ---
 layout: page
-title: What can we do?
+title: Protecting Against Sycophancy
 permalink: /do-something/
 nav_order: 5
 ---

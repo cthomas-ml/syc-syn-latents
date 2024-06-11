@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Mitigation Methods
+title: Approaches 
 permalink: /intro/
 nav_order: 1
 ---

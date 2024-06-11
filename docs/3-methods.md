@@ -19,7 +19,11 @@ In these cases, we consider the scenario where an incorrect user opinion is prov
 
 ## Results on similar train/test data
 
-Prior to training the probe, we can use supervised logistic regression to check to see whether the representations are sufficiently different. We can then remove labels and run CCS. Splitting each dataset 50/50 and checking supervised logistic regression accuracy of CCS embeddings, and comparing that to unsupervised CCS performance:
+In CCS every prompt gets manipulated into two prompts - one representing each answer of the two-choice question. The two samples are then passed through the model to calculate an embedding vector. 
+
+From that point we can use the vectors and their labels to train a logistic regression model to determine whether the vectors are easily distinguished. If not, we are unlikely to successfully train a CCS probe. 
+
+We can then remove labels and run CCS. Splitting each dataset 50/50 and checking supervised logistic regression accuracy of CCS embeddings, and comparing that to unsupervised CCS performance:
 
 | Dataset (50/50 split)      |     Logistic Regression on Latents| CCS  result |
 --------------------------------|----------------|----------------|
