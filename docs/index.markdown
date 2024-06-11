@@ -54,16 +54,18 @@ Below you'll find a brief summary of the work I've done in this project.  The li
 
 ## Approaches to address sycophancy in LLMs
 
-In this post I'm digging into two recent publications with methods that might help reduce large language model sycophancy. The first is [Simple synthetic data reduces sycophancy in large language models](https://arxiv.org/abs/2308.03958), and the second is [Discovering Latent Knowledge in Language Models Without Supervision](https://arxiv.org/abs/2212.03827).  Both papers provided github repos with code to make it a bit easier to reproduce their work. 
+In this post I'm digging into two recent publications with methods that might help reduce large language model sycophancy. The first is [Simple synthetic data reduces sycophancy in large language models](https://arxiv.org/abs/2308.03958), and the second is [Discovering Latent Knowledge in Language Models Without Supervision](https://arxiv.org/abs/2212.03827).  Both papers link to GitHub repos that were used heavily in this study. 
 
 
 
 ## Quantifying model sycophancy
+<span style="color:grey"> 
+*Detailed discussion and code for this summary can be found in the Exploring Sycophancy Section in the sidebar.* </span>
 
-I'm working with the [google/flan-t5-xxl](https://huggingface.co/google/flan-t5-xxl) model, which is similar to the models used in the papers above. 
+I chose to work with the [google/flan-t5-xxl](https://huggingface.co/google/flan-t5-xxl) model because it is similar to the models used in the papers above, but the code provided will work easily with any huggingface model. 
 I generated two synthetic language datasets using the [synthetic data github repo](https://github.com/google/sycophancy-intervention). I also used an open-source dataset of product reviews.  For all datasets, I processed the prompts to include or exclude incorrect user opinions and limit the model response to multiple choice (Agree or Disagree).  
 
-The model and data and exploration code is available in a [very accessible notebook]({{site.baseurl}}/exploration-nb) - try it out!
+The model and data and exploration code is available in a very accessible notebook, [try it out!]({{site.baseurl}}/exploration-nb)
 
 
 | Dataset | No opinion | Incorrect opinion included  |
@@ -75,8 +77,7 @@ The model and data and exploration code is available in a [very accessible noteb
 
 In the multiple-choice setting, the model generally prefers to agree with an opinion expressed in the prompt, even if it answers correctly when no opinion is included. 
 
-In [Exploring sycophancy]({{site.baseurl}}/exploring-sycophancy), the observed model sycophancy appears to be sensitive to multiple details in the prompt. Specifically, to how the  opinion is phrased, which output format is requested (eg. classification vs. summarization task), and the sensitivity differs based on the dataset (eg. simple math vs IMDB sentiment).
-For example, in the math dataset the model exhibits sycophancy in the multiple choice setting, but not in summary mode, whereas in the IMDB dataset, it is less prone to exhibit sycophancy in the multiple choice setting and can be tricked more readily in summary mode. 
+The tendency of the model to agree is sensitive to how an opinion is phrased, the requested output task (classification vs. summarization), and the specifics of the dataset. For example, in the math dataset the model exhibits sycophancy in the multiple choice setting, but not in summary mode, whereas in the IMDB dataset, it is less prone to exhibit sycophancy in the multiple choice setting and can be tricked more readily in summary mode. 
 
 
 ### Sensitivity to prompt manipulation will impact both methods
@@ -84,18 +85,16 @@ For example, in the math dataset the model exhibits sycophancy in the multiple c
 
 Both sycophancy mitigation methods depend on prompt manipulation for training. In CCS, we aim to generate model embeddings for *both* answers to a given question. A probe is trained to contrast those two embeddings and determine which one is the 'truth.' In finetuning with synthetic data, the dataset is generated with a predefined format. 
 
-I found that the model is sensitive to the specific prompt manipulation, and believe that this will impact performance in both CCS and finetuning with synthetic data.  
 
 
-
-### The synthetic linguistics data are confusing 
+### The synthetic linguistics prompts are confusing 
 {: .no_toc }
 
-When finetuning on the linguistics dataset, the expectation is that the model will learn to priotitize truthfulness over sycophancy, where 'truthfulness' means reflective of the model's learned knowledge. 
+The synthetic linguistics dataset has randomized opinions injected into verbose true and false statements. 
+The aim in finetuning is to train the model to prioritize truthfulness over sycophancy, where 'truthfulness' means reflective of the model's learned knowledge. 
 
-However, the model accuracy on prompts with opinions removed is only slightly better than random. This means that in many cases, the model doesn't have learned knowledge to prioritize. Instead, it is being finetuned on meaningless phrases that contain opinions. This may reduce sycophancy, but it's likely at the cost of model performance on unrelated, meaningful tasks.
-
-I did find that when I applied CCS to these data, there was poor separation in latent space of opposite sentiments on many of the prompts. 
+To ensure the model will prioritize its knowledge over agreement, the dataset is filtered to include only samples that the model answers correctly when opinions are removed. Even without opinions, the model accuracy is only slightly better than random. 
+This means that in many cases that pass through the filter, the model doesn't have learned knowledge to prioritize. Instead, it is being finetuned on meaningless phrases that contain opinions. This may reduce sycophancy, but it's likely at the cost of model performance on unrelated, meaningful tasks.
 
 
 ## Training Sycophancy Mitigators
@@ -135,7 +134,7 @@ I was not able to get access to a large enough GPU to finetune the model using t
 
 To effectively leverage either the CCS or finetuning on synthetic data method, one would prepare a trained probe or finetuned model using a dataset selected to protect against the sycophantic behavior of interest.  
 
-A deployed model might behave as follows
+A deployed model might behave as follows. 
 
 With CCS, given a trained probe, 
 ```
