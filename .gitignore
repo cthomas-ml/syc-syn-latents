@@ -1,6 +1,6 @@
 *.DS_Store
-models/*
-data_processing/*
+code/models/*
+code/data_processing/*
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
