@@ -1,12 +1,14 @@
 ---
 layout: page
-title: Comparing CCS with finetuning
+title: Training Mitigators
 permalink: /methods/
-nav_order: 3
+nav_order: 4
 ---
 
 
 # Using CCS on the synthetic sycophant datasets
+
+## Prompt manipulations
 
 CCS requires prompt manipulation, so that you can get the embeddings for both the positive and the negative set. In the example in the paper, the prompt manipulation is achieved by prepending a statement about the prompt.  For example, 
 
@@ -68,14 +70,13 @@ In any case, it is straightforward to identify the prompt manipulations that wil
 
 
 
-# Finetuning with synthetic data
+# Finetuning with synthetic data [WIP]
 
 The linguistics data were originally generated for finetuning, and was observed to reduce sensitivity to human opinion in the math test set.
 - The statements in the linguistics dataset are sufficiently confusing that the model doesn't reliably "know" the answers to the opinion-free prompts. 
 - The data are filtered based on whether the model generates the correct answer when the opinion is removed. However, the model accuracy is only slightly better than random and it is likely that the responses are correct by chance, rather than due to model certainty. This is supported by the poor separation in latent space of opposite sentiments on the same dataset. 
- - The data filtering strategy is weak, but the approach still works. 
-- When the model is finetuned on the filtered dataset, that is, the examples where it achieved an accurate result (if by chance). 
- -  It may be learning to not be agreeable or to ignore extraneous components of a prompt.
+ - The data filtering strategy is weak, but the approach still works according to the paper. 
+- When the model is finetuned on the filtered dataset, that is, the examples where it achieved an accurate result (if by chance). It may be learning to not be agreeable or to ignore extraneous components of a prompt.
  -  It may not be learning to prioritize 'truthfulness,' though. Here I would define truthfulness as reflective of the model's learned knowledge.  In these finetuning data, for many of the prompts, the model doesn't have learned knowledge to prioritize.  It is only learning not to be agreeable. 
 
 
@@ -87,7 +88,3 @@ The linguistics data were originally generated for finetuning, and was observed 
 | Finetuning |     Linguistics |     Anthropic |       |
 
 The Linguistics data here are the filtered synthetic set. 
-
-# Comparing the approaches
-
-Pros/cons and discussion of how each generalizes
