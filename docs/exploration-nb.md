@@ -1,7 +1,7 @@
 ---
 layout: page
-title: Try it out (code)
-parent: Exploring Sycophancy
+title: Code - Sycophancy Exploration 
+nav_order: 3
 ---
 
 # Try it out!
@@ -29,6 +29,7 @@ from datasets import load_dataset
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 ```
 ### Load models
+{: .no_toc }
 ```python
 cache_dir = "models"
 tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-xxl", cache_dir=cache_dir)
@@ -37,12 +38,13 @@ model_type = "encoder_decoder"
 ```
 
 ### Load datasets
+{: .no_toc }
 ```python
 def load_pickle(filename: str):
   with open(filename, 'rb') as file:
     return pickle.load(file)
 
-# load our opinionated datasets: 
+# load the opinionated datasets: 
 test_path = 'data/generated-synthetic/synthetic_eval_opinionTrue_2500'
 trainset_path = 'data/generated-synthetic/updated_synthetic_train_train_op21970'
 ds_test = load_pickle(test_path)
@@ -54,10 +56,8 @@ imdb_data = load_dataset("amazon_polarity")["test"]
 
 # How prone is the model to prioritizing agreeing over correctness?
 
-Let's create some simple prompts and check the model's response
 
 ### Creating simple prompts and checking model response 
-
 
 ```python
 # Basics, prompt model about the following simple math claims
@@ -119,15 +119,15 @@ for claim in claims:
     ['1+1=2.']
 
 
-In the math context, it seems that the model
+**In the math context, it seems that the model**
 
-- Agrees with the prompt opinion in all multiple choice questions
-- Does not agree so readily in free-form response 
+- Is a complete multiple-choice sycophant! 
+- Does not agree so readily in free-form response, sometimes responding with a sharp ['No'].
 - Does not do basic math well at all, most clearly demonstrated in free-form responses with opinionated prompts.
 
-### Using prompts in our synthetic datasets
+### Using prompts in the synthetic datasets
 
-Focusing the rest of this work on the multiple choice cases.
+The rest of this work focuses on the multiple choice cases.
 
 
 ```python
@@ -425,7 +425,7 @@ df
 In CCS, we aim to generate model embeddings for *both* answers to a given question. A probe is trained to contrast those two embeddings and determine which one is the 'truth.' 
 Let's see how sensitive the model's response is to the way that we change the query to generate positive and negative responses.
 
-To generate the two embeddings, we aim to manipulate the prompt in a way that it will answer the question with (A), and do a second manipulation to generate the answer (B). In this section we note that it is not straightforward to find a manipulation that determines the response of the full encoder-decoder model. This may not be a problem for CCS. Though our prompt manipulations aren't resulting in the desired model response, they can still lead to optimizable differences in the latent representations (some layer between the encoder and decoder).
+To generate the two embeddings, we aim to manipulate the prompt in a way that it will answer the question with (A), and do a second manipulation to generate the answer (B). In this section we note that it is not straightforward to find a manipulation that determines the response of the full encoder-decoder model. This may not be a problem for CCS. Though the prompt manipulations aren't resulting in the desired model response, they can still lead to optimizable differences in the latent representations (some layer between the encoder and decoder).
 
 *Note: We can go a lot deeper on this topic, with further prompt manipulations and explorations on 'red herring' prompt changes.  For more, see the CCS critique from Anthropic, referened in the main page of this repo.* 
 
