@@ -7,6 +7,16 @@ title: Project Home
 nav_order: 0
 ---
 
+<details open markdown="block">
+  <summary>
+    Home page contents
+  </summary>
+  {: .text-delta }
+- TOC
+{:toc}
+</details>
+
+
 # Overview
 
 Sycophancy is the tendency to agree with a statement even when you don't think that it's true.  As people in a social society, we don't always choose to voice our disagreements. We decide whether or not to be agreeable based on factors like our audience, comfort-level, and readiness to engage. We consider the context and decide whether to agree or engage, and we expect others to do the same.
@@ -14,16 +24,6 @@ Sycophancy is the tendency to agree with a statement even when you don't think t
 We would not expect Wikipedia to exhibit sycophancy. When we turn to online sources or virtual assistants with a question, we reasonably expect a response that is accurate and consistent with the response that a friend would receive. Today's Large Language Models do not meet this expectation. 
 
 In this post I am digging into the nature of LLM sycophancy. I'm trying to understand scenarios in which it arises - which datasets, output formats, and prompt manipulations most easily encourage the model to output an incorrect or inconsistent response. Next, I dive into two recent approaches that aim to mitigate LLM sycophancy, both of which depend on automated prompt manipulation. Finally, I lay out how either technique would be used in production.  
-
-
-<!-- <details open markdown="block">
-  <summary>
-    Home page contents
-  </summary>
-  {: .text-delta }
-- TOC
-{:toc}
-</details> -->
 
 
 ## Contributions 
@@ -44,12 +44,12 @@ In this post I am digging into the nature of LLM sycophancy. I'm trying to under
 - Suggest methods to leverage these approaches in real-life scenarios.
 
 ## Navigating this site
-{: .no_toc }
+
 
 Below you'll find the main project summary. The links and sidepanel will bring you to detailed discussion and code if you'd like to follow along.
 
 
-# Summary
+# Understanding and Mitigating Model Sycophancy 
 
 ## Approaches to address sycophancy in LLMs
 
@@ -87,7 +87,7 @@ I also found that the **sycophantic tendency of the model is sensitive to how an
 
 **The sensitivity of the model's sycophancy to the specifics of prompt manipulation will impact both mitigation methods.** Both methods involve prompt editing to create training data and may thus be vulnerable if manipulations don't capture the target sycophancy-inducing prompts. In CCS, the aim is to generate model embeddings for *both* answers to a given question. A probe is trained to contrast those two embeddings and determine which one is the 'truth.' In finetuning with synthetic data, the dataset is generated with a predefined format. 
 
-## Training Sycophancy Mitigators
+## Training sycophancy mitigators
 <span style="color:grey"> 
 *This section benefited greatly from the well-documented and easy-to-follow [CCS GitHub repo](https://github.com/collin-burns/discovering_latent_knowledge).
 Note that all experiments in this section were performed with low number of samples, and to get reliable results would require re-running at higher N.  Stay tuned* </span>.
@@ -151,10 +151,9 @@ We could compare the tools above with the simplest solution, which might be some
 ```
 
 # What's next
-- Finetune the model using the filtered sycophantic dataset and make a direct comparison. 
-- Re-run CCS with larger datasets.
+- Finetune the model using the filtered sycophantic dataset and make a direct comparison with CCS on larger training sets. 
 - Test both approaches against Anthropic's synthetically generated eval datasets. 
-- Examine knowledge loss in both resulting models.
+- Examine knowledge loss in both approaches.
 - Share more of the code used in this project.
 - Where in the model is sycophancy happening? In both the math and IMDB datasets, tendency towards sycophancy is different in summary and multiple choice scenarios.
 
