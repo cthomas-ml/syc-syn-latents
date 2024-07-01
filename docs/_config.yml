@@ -52,10 +52,8 @@ theme: just-the-docs
 
 # Aux links for the upper right navigation
 aux_links:
-  "Visit me on GitHub":
+  "See the full repo on GitHub":
     - "//github.com/cthomas-ml/syc-syn-latents"
-  "Exploration notebook":
-    - "//github.com/cthomas-ml/syc-syn-latents/code/explore_the_data.ipynb"
 # Makes Aux links open in a new tab. Default is false
 aux_links_new_tab: true
 

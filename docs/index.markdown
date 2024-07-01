@@ -8,11 +8,9 @@ nav_order: 0
 ---
 
 {:refdef: style="text-align: center;"}
-![Image](images/Chatbot.png){: width="400"}
-{: refdef}
-
-{:refdef: style="text-align: center;"}
-**Sycophantic behavior in LLMs** I can manipulate the chatbot by simply including an opinion.
+![Image](images/Chatbot.png){: width="400"}  
+**Sycophantic behavior in LLMs**    
+I can manipulate the chatbot by simply including an opinion.
 {: refdef}
 
 
@@ -63,7 +61,7 @@ Below you'll find the main project summary. The links and sidepanel will bring y
 
 ## Approaches to address sycophancy in LLMs
 
-In this post I'm digging into two recent publications with methods that might help reduce large language model sycophancy. The first is [Simple synthetic data reduces sycophancy in large language models](https://arxiv.org/abs/2308.03958), and the second is [Discovering Latent Knowledge in Language Models Without Supervision](https://arxiv.org/abs/2212.03827).  Both papers link to GitHub repos that were used heavily in this study. 
+In this post I'm digging into two recent publications with methods that might help reduce large language model sycophancy. The first is [Simple synthetic data reduces sycophancy in large language models](https://arxiv.org/abs/2308.03958), and the second is [Discovering Latent Knowledge in Language Models Without Supervision](https://arxiv.org/abs/2212.03827).  Both papers link to GitHub repos that were used heavily in this study, and I provide a high-level summary in the Approaches section in the sidebar.
 
 I chose to work with the [google/flan-t5-xxl](https://huggingface.co/google/flan-t5-xxl) model because it is similar to the models used in the papers above, but [the code in this repo](https://github.com/cthomas-ml/syc-syn-latents/tree/main/code) will work with any huggingface model. 
 
