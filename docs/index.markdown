@@ -7,6 +7,15 @@ title: Project Home
 nav_order: 0
 ---
 
+{:refdef: style="text-align: center;"}
+![Image](images/Chatbot.png){: width="400"}
+{: refdef}
+
+{:refdef: style="text-align: center;"}
+**Sycophantic behavior in LLMs** I can manipulate the chatbot by simply including an opinion.
+{: refdef}
+
+
 <details open markdown="block">
   <summary>
     Home page contents
@@ -23,7 +32,8 @@ Sycophancy is the tendency to agree with a statement even when you don't think t
 
 We would not expect Wikipedia to exhibit sycophancy. When we turn to online sources or virtual assistants with a question, we reasonably expect a response that is accurate and consistent with the response that a friend would receive. Today's Large Language Models do not meet this expectation. 
 
-In this post I am digging into the nature of LLM sycophancy. I'm trying to understand scenarios in which it arises - which datasets, output formats, and prompt manipulations most easily encourage the model to output an incorrect or inconsistent response. Next, I dive into two recent approaches that aim to mitigate LLM sycophancy, both of which depend on automated prompt manipulation. Finally, I lay out how either technique would be used in production.  
+
+In this post I dig into the nature of LLM sycophancy. I aim to understand scenarios in which it arises, to idenfity datasets, output formats, and prompt manipulations that most easily encourage the model to output an incorrect or inconsistent response. Next, I dive into two recent approaches that aim to mitigate LLM sycophancy, both of which depend on automated prompt manipulation. Finally, I lay out how either technique would be used in production.  
 
 
 ## Contributions 
